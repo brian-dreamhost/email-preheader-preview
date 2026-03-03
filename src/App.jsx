@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
 const CLIENTS = [
   { id: 'gmail-desktop', name: 'Gmail (Desktop)', maxSubject: 70, maxPreheader: 90, subjectWeight: 'bold', preheaderColor: '#5f6368', bgColor: '#ffffff', fontFamily: 'Google Sans, Roboto, Arial, sans-serif', fontSize: '14px' },
@@ -25,7 +25,7 @@ function truncate(text, max) {
   return text.slice(0, max).replace(/\s+\S*$/, '') + '...'
 }
 
-function PreviewRow({ client, subject, preheader, senderName, darkMode }) {
+const PreviewRow = memo(function PreviewRow({ client, subject, preheader, senderName, darkMode }) {
   const dark = darkMode ? DARK_OVERRIDES[client.id] : null
   const bgColor = dark?.bgColor || client.bgColor
   const subjectColor = dark?.subjectColor || '#1a1a1a'
@@ -69,7 +69,7 @@ function PreviewRow({ client, subject, preheader, senderName, darkMode }) {
       </div>
     </div>
   )
-}
+})
 
 export default function App() {
   const [subject, setSubject] = useState('')
@@ -165,8 +165,10 @@ export default function App() {
         {/* Previews */}
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-white">Inbox Previews</h2>
-          {CLIENTS.map(client => (
-            <PreviewRow key={client.id} client={client} subject={subject} preheader={preheader} senderName={senderName} darkMode={darkMode} />
+          {CLIENTS.map((client, index) => (
+            <div key={client.id} className="animate-slideUp" style={{ animationDelay: `${index * 0.08}s` }}>
+              <PreviewRow client={client} subject={subject} preheader={preheader} senderName={senderName} darkMode={darkMode} />
+            </div>
           ))}
         </div>
 
@@ -182,7 +184,7 @@ export default function App() {
               { title: 'Include a CTA', text: 'Preheaders like "Open to see your results" or "Here\'s what you missed" drive higher open rates.' },
               { title: 'Hide filler text', text: 'If your preheader is shorter than the visible space, add hidden whitespace characters to prevent body text from showing.' },
             ].map((tip, i) => (
-              <div key={i} className="bg-midnight/50 rounded-lg p-3">
+              <div key={i} className="bg-midnight/50 rounded-lg p-3 hover-lift animate-slideUp" style={{ animationDelay: `${i * 0.08}s` }}>
                 <p className="font-medium text-azure mb-1">{tip.title}</p>
                 <p className="text-galactic text-xs">{tip.text}</p>
               </div>
@@ -192,7 +194,7 @@ export default function App() {
       </div>
 
       <footer className="border-t border-metal/30 mt-16">
-        <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-galactic">
+        <div className="max-w-[1600px] mx-auto px-4 py-6 text-center text-sm text-galactic">
           Free marketing tools by <a href="https://www.dreamhost.com" target="_blank" rel="noopener" className="text-azure hover:text-white transition-colors">DreamHost</a>
         </div>
       </footer>
